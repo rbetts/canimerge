@@ -7,16 +7,19 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os/exec"
 	"strings"
 )
 
 var detail bool
 var branch string
 var debug bool
+var checkout bool
 
 func init() {
 	flag.BoolVar(&detail, "detail", false, "Print detailed job status.")
 	flag.BoolVar(&debug, "debug", false, "Print retreived json (verbose)")
+	flag.BoolVar(&checkout, "checkout", false, "Use the currently checked-out git branch instead of <branch>")
 }
 
 /*
@@ -87,14 +90,27 @@ type TestReport struct {
 
 func main() {
 	flag.Parse()
-	branch = flag.Arg(0)
+	if checkout {
+		branch = resolveCurrentGitBranch()
+	} else {
+		branch = flag.Arg(0)
+	}
 	if len(branch) == 0 {
-		log.Print("\nUsage: canimerge [--debug] [--detail] <branchname>\n")
+		log.Print("\nUsage: canimerge [--debug] [--detail] <-checkout | branchname>\n")
 		flag.PrintDefaults()
 		return
 	}
 	checkBranch("A-master", "master")
 	checkBranch("branch-"+branch, branch)
+}
+
+func resolveCurrentGitBranch() string {
+	out, err := exec.Command("git", "rev-parse", "--symbolic-full-name",
+		"--abbrev-ref", "HEAD").Output()
+	if err != nil {
+		log.Fatal("Can not resolve --checkout branch name. ", err)
+	}
+	return strings.TrimSpace(string(out))
 }
 
 func checkBranch(branch, display string) {
@@ -158,10 +174,10 @@ func isViewBlue(view View, branch string) (retval bool) {
 				fmt.Printf("FAIL: %s\n", job.Name)
 				printBranchFailureDetails(branch, job.Name)
 			}
-            retval = false
+			retval = false
 		}
 	}
-    return
+	return
 }
 
 func printBranchFailureDetails(branch string, job string) {
