@@ -101,7 +101,13 @@ func main() {
 		return
 	}
 	checkBranch("A-master", "master")
+	if detail {
+		fmt.Printf("\n")
+	}
 	checkBranch("branch-"+branch, branch)
+	if detail {
+		fmt.Printf("\n")
+	}
 }
 
 func resolveCurrentGitBranch() string {
@@ -117,9 +123,9 @@ func checkBranch(branch, display string) {
 	url := "http://ci/view/" + branch + "/api/json?pretty=true"
 	view := decodeView(getJSON(url))
 	if isViewBlue(view, branch) {
-		fmt.Printf(">> PASS: " + display + ".\n\n")
+		fmt.Printf(">> PASS: " + display + ".\n")
 	} else {
-		fmt.Printf(">> FAIL: " + display + ".\n\n")
+		fmt.Printf(">> FAIL: " + display + ".\n")
 	}
 }
 
