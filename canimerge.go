@@ -168,7 +168,9 @@ func isViewBlue(view View, branch string) (retval bool) {
 		} else if strings.Contains(job.Color, "aborted") {
 			if detail {
 				fmt.Printf("ABORTED: %s\n", job.Name)
+				printBranchFailureDetails(branch, job.Name)
 			}
+			retval = false
 		} else if job.Color == "red_anime" {
 			if detail {
 				fmt.Printf("FAIL (in progress): %s\n", job.Name)
