@@ -90,6 +90,10 @@ type TestReport struct {
 
 func main() {
 	flag.Parse()
+	// If no branch name given, default to checkout the current branch
+	if flag.NArg() == 0 {
+		checkout = true
+	}
 	if checkout {
 		branch = resolveCurrentGitBranch()
 	} else {
