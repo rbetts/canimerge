@@ -108,9 +108,11 @@ func main() {
 	if detail {
 		fmt.Printf("\n")
 	}
-	checkBranch("branch-"+branch, branch)
-	if detail {
-		fmt.Printf("\n")
+	if "master" != branch {
+		checkBranch("branch-"+branch, branch)
+		if detail {
+			fmt.Printf("\n")
+		}
 	}
 }
 
